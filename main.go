@@ -3,64 +3,54 @@ package main
 import (
 	"fmt"
 	"os"
-
-	// "strconv"
 	"strings"
 )
 
 func main() {
-	inputFile := "standard.txt"
-	// inputFile = "standard.txt"
-	file, err := os.ReadFile(inputFile)
+	file, err := os.ReadFile("standard.txt")
 	if err != nil {
-		fmt.Println("Error reading file:", err)
+		fmt.Print("There was a problem opening our data")
+		os.Exit(1)
+	} else if len(os.Args) != 2 {
+		fmt.Print("Usage: go run <program.go> <input>")
+		os.Exit(2)
+	}
+	lines := strings.Split(string(file), "\n")
+	sepText := strings.Split(os.Args[1], "\\n")
+	printAsciiArt(sepText, lines)
+}
+
+func printAsciiArt(sentences []string, textFile []string) {
+	// Base case: If no sentences left, return
+	if len(sentences) == 0 {
 		return
 	}
-	text := "Sample"
-	if len(os.Args) > 1 {
-		text = os.Args[1]
+
+	// Process the first sentence (sentences[0])
+	if sentences[0] != "" {
+		printSentenceAscii(sentences[0], textFile, 1)
 	}
-	fileString := string(file)
-	fileString = strings.Replace(fileString, "\r", "", -1)
-	lines := strings.Split(fileString, "\n")
-	text_lines := strings.Split(text, "\\n")
 
-	for l := 0; l < len(text_lines); l++ {
-		runes := []rune(text_lines[l])
+	// Recursive call to process the remaining sentences
+	printAsciiArt(sentences[1:], textFile)
+}
 
-		for i := 0; i < 8; i++ {
-			for j := 0; j < len(runes); j++ {
-				// fmt.Print(j)
-				pos := int(runes[j] - 32)
-				pos2 := 1 + (int(runes[j])-32)*9 + i
-				// fmt.Printf("%d ", pos2)
-				letterLen := length(lines, pos)
-				// fmt.Print(letterLen)
-				fmt.Print(lines[pos2])
+func printSentenceAscii(word string, textFile []string, h int) {
+	// Base case: If we've processed all the lines for this character height, return
+	if h > 8 {
+		return
+	}
 
-				printSpaces(letterLen - len(lines[pos2]))
+	// Print the current line for each character in the word
+	for i := 0; i < len(word); i++ {
+		for lineIndex, line := range textFile {
+			if lineIndex == (int(word[i])-32)*9+h {
+				fmt.Print(line)
 			}
-			fmt.Println()
 		}
 	}
-}
+	fmt.Println()
 
-func printSpaces(n int) {
-	for i := 0; i < n; i++ {
-		fmt.Printf(" ")
-	}
-}
-
-func length(list []string, ind int) int {
-	i := 1 + 9*ind
-	// fmt.Print(i)
-	// fmt.Print("IND"+strconv.Itoa(i))
-	max := 1
-	for ; i < 1+9*ind+9; i++ {
-		lineLength := len(list[i])
-		if lineLength > max {
-			max = lineLength
-		}
-	}
-	return max
+	// Recursive call for the next line height
+	printSentenceAscii(word, textFile, h+1)
 }
