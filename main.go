@@ -7,35 +7,52 @@ import (
 )
 
 func main() {
+	// Read the file
 	file, err := os.ReadFile("standard.txt")
 	if err != nil {
 		fmt.Print("There was a problem opening our data")
 		os.Exit(1)
-	} else if len(os.Args) != 2 {
+	}
+
+	// Ensure correct argument usage
+	if len(os.Args) != 2 {
 		fmt.Print("Usage: go run <program.go> <input>")
 		os.Exit(2)
 	}
+
+	// Split the lines of the file into a slice
 	lines := strings.Split(string(file), "\n")
-	sepText := strings.Split(os.Args[1], "\\n")
-	printAsciiArt(sepText, lines)
+
+	// Capture the input from the user
+	inputText := os.Args[1]
+
+	// Split the input string into lines, based on literal newline characters
+	sepText := strings.Split(inputText, "\\n") // Handling literal "\n" from the input
+
+	// Print the ASCII Art based on the input
+	printAsciiArtRecursive(sepText, lines)
 }
 
-func printAsciiArt(sentences []string, textFile []string) {
+func printAsciiArtRecursive(sentences []string, textFile []string) {
 	// Base case: If no sentences left, return
 	if len(sentences) == 0 {
 		return
 	}
 
-	// Process the first sentence (sentences[0])
+	// Process the first sentence
 	if sentences[0] != "" {
-		printSentenceAscii(sentences[0], textFile, 1)
+		printSentenceAsciiRecursive(sentences[0], textFile, 1)
+		fmt.Print()
+	} else {
+		// If the sentence is empty (i.e., there was a '\n'), print an empty line
+		fmt.Println()
 	}
 
 	// Recursive call to process the remaining sentences
-	printAsciiArt(sentences[1:], textFile)
+	printAsciiArtRecursive(sentences[1:], textFile)
 }
 
-func printSentenceAscii(word string, textFile []string, h int) {
+func printSentenceAsciiRecursive(word string, textFile []string, h int) {
 	// Base case: If we've processed all the lines for this character height, return
 	if h > 8 {
 		return
@@ -45,6 +62,7 @@ func printSentenceAscii(word string, textFile []string, h int) {
 	for i := 0; i < len(word); i++ {
 		for lineIndex, line := range textFile {
 			if lineIndex == (int(word[i])-32)*9+h {
+				// Print the line corresponding to the current character and line number
 				fmt.Print(line)
 			}
 		}
@@ -52,7 +70,7 @@ func printSentenceAscii(word string, textFile []string, h int) {
 	fmt.Println()
 
 	// Recursive call for the next line height
-	printSentenceAscii(word, textFile, h+1)
+	printSentenceAsciiRecursive(word, textFile, h+1)
 }
 
 /*func printAsciiArt(sentences []string, textFile []string) {
