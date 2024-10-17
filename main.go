@@ -7,17 +7,20 @@ import (
 )
 
 func main() {
+	// Ensure correct argument usage
+	if len(os.Args) < 2 || len(os.Args) > 3 {
+		fmt.Print("Usage: go run <program.go> <input> + <banner>(optional)")
+		os.Exit(2)
+	}
+	var banner string = "banner/standard.txt"
+	if len(os.Args) == 3 {
+		banner = os.Args[2]
+	}
 	// Read the file
-	bannerFile, err := os.ReadFile("banner/standard.txt")
+	bannerFile, err := os.ReadFile(banner)
 	if err != nil {
 		fmt.Print("There was a problem reading the banner file template")
 		os.Exit(1)
-	}
-
-	// Ensure correct argument usage
-	if len(os.Args) != 2 {
-		fmt.Print("Usage: go run <program.go> <input>")
-		os.Exit(2)
 	}
 
 	// Split the lines of the file into a slice
